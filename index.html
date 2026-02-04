@@ -3,39 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>麻將計分 App</title>
+    <title>麻將計分 App </title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "lucide-react": "https://esm.sh/lucide-react@0.263.1"
-      }
-    }
-    </script>
-
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
         body { overscroll-behavior-y: none; }
-        /* 滾動條美化 */
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #065f46; border-radius: 10px; }
         .crown-icon { filter: drop-shadow(0 0 2px gold); }
+        .loading { display: flex; justify-content: center; align-items: center; height: 100vh; color: white; font-family: sans-serif; }
     </style>
 </head>
 <body class="bg-emerald-950">
     
-    <div id="root"></div>
+    <div id="root">
+        <div class="loading">
+            <div>
+                <h2 class="text-2xl font-bold mb-2">載入中...</h2>
+                <p class="text-sm opacity-70">RWD 介面初始化中</p>
+            </div>
+        </div>
+    </div>
 
-    <script type="text/babel" data-type="module">
-        import React, { useState, useEffect } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { Settings, RotateCcw, FileSpreadsheet, History, Users, Calculator, CheckCircle, AlertCircle, Trash2, Pencil, Crown } from 'lucide-react';
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            document.getElementById('root').innerHTML = `
+                <div style="padding:20px; color:white; background:darkred; margin:20px; border-radius:8px;">
+                    <h3>發生錯誤</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        };
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+
+        // --- 內建圖示 ---
+        const IconBase = ({ d, size = 20, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {d}
+            </svg>
+        );
+
+        const Settings = (props) => <IconBase {...props} d={<><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></>} />;
+        const History = (props) => <IconBase {...props} d={<><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l3 3"/></>} />;
+        const RotateCcw = (props) => <IconBase {...props} d={<><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></>} />;
+        const Users = (props) => <IconBase {...props} d={<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />;
+        const Calculator = (props) => <IconBase {...props} d={<><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></>} />;
+        const CheckCircle = (props) => <IconBase {...props} d={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>} />;
+        const AlertCircle = (props) => <IconBase {...props} d={<><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></>} />;
+        const Crown = (props) => <IconBase {...props} d={<><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></>} />;
+        const Trash2 = (props) => <IconBase {...props} d={<><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></>} />;
+        const Pencil = (props) => <IconBase {...props} d={<><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></>} />;
+        const FileSpreadsheet = (props) => <IconBase {...props} d={<><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></>} />;
 
         function App() {
             const [view, setView] = useState('settings'); 
@@ -43,10 +71,8 @@
             const [scores, setScores] = useState({ '東': 0, '南': 0, '西': 0, '北': 0 });
             const [baseScore, setBaseScore] = useState(30);
             const [taiScore, setTaiScore] = useState(10);
-            const [dealer, setDealer] = useState('東'); // 新增莊家狀態
-            
-            const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQ6VYhn1cCGmySbW83qfOz3m5QPDUGlUDdeYlG3nKWfFFuLsXJ4vFpFFJB0J34LdFFkA/exec';
-            const [googleScriptUrl, setGoogleScriptUrl] = useState(DEFAULT_SCRIPT_URL);
+            const [dealer, setDealer] = useState('東');
+            const [googleScriptUrl, setGoogleScriptUrl] = useState('https://script.google.com/macros/s/AKfycbxQ6VYhn1cCGmySbW83qfOz3m5QPDUGlUDdeYlG3nKWfFFuLsXJ4vFpFFJB0J34LdFFkA/exec');
             
             const [transactions, setTransactions] = useState([]);
             const [winner, setWinner] = useState(null);
@@ -55,21 +81,28 @@
             const [isSelfDraw, setIsSelfDraw] = useState(false);
             const [loading, setLoading] = useState(false);
             const [notification, setNotification] = useState(null);
-
-            // 用來預覽計算結果的狀態
             const [previewScore, setPreviewScore] = useState(0);
 
             useEffect(() => {
                 const saved = localStorage.getItem('mahjongState_v2');
                 if (saved) {
-                    const parsed = JSON.parse(saved);
-                    setPlayers(parsed.players || ['東', '南', '西', '北']);
-                    setScores(parsed.scores || { '東': 0, '南': 0, '西': 0, '北': 0 });
-                    setBaseScore(parsed.baseScore !== undefined ? parsed.baseScore : 30);
-                    setTaiScore(parsed.taiScore !== undefined ? parsed.taiScore : 10);
-                    setGoogleScriptUrl(parsed.googleScriptUrl || DEFAULT_SCRIPT_URL);
-                    setTransactions(parsed.transactions || []);
-                    setDealer(parsed.dealer || parsed.players?.[0] || '東');
+                    try {
+                        const parsed = JSON.parse(saved);
+                        const loadedPlayers = parsed.players || ['東', '南', '西', '北'];
+                        setPlayers(loadedPlayers);
+                        
+                        const safeScores = { ...parsed.scores };
+                        loadedPlayers.forEach(p => {
+                            const s = Number(safeScores[p]);
+                            safeScores[p] = isNaN(s) ? 0 : s;
+                        });
+                        setScores(safeScores);
+                        setBaseScore(isNaN(Number(parsed.baseScore)) ? 30 : Number(parsed.baseScore));
+                        setTaiScore(isNaN(Number(parsed.taiScore)) ? 10 : Number(parsed.taiScore));
+                        setGoogleScriptUrl(parsed.googleScriptUrl || '');
+                        setTransactions(parsed.transactions || []);
+                        setDealer(parsed.dealer || loadedPlayers[0] || '東');
+                    } catch (e) { console.error("Data Load Error", e); }
                 }
             }, []);
 
@@ -78,7 +111,6 @@
                 localStorage.setItem('mahjongState_v2', JSON.stringify(stateToSave));
             }, [players, scores, baseScore, taiScore, googleScriptUrl, transactions, dealer]);
 
-            // 計算分數邏輯核心
             const calculateImpact = (currentWinner, currentLoser, currentIsSelfDraw, currentTai, currentDealer) => {
                 if (!currentWinner) return null;
                 if (!currentIsSelfDraw && !currentLoser) return null;
@@ -88,14 +120,13 @@
                 
                 let totalWinAmount = 0;
                 let desc = "";
-
-                const calcSingleScore = (tai) => baseScore + (tai * taiScore);
+                const safeBase = Number(baseScore) || 0;
+                const safeTaiScore = Number(taiScore) || 0;
+                const calcSingleScore = (tai) => safeBase + (tai * safeTaiScore);
 
                 if (currentIsSelfDraw) {
-                    // 自摸
                     players.forEach(p => {
                         if (p !== currentWinner) {
-                            // 判斷台數：如果贏家是莊家，或者付錢的人是莊家，台數+1
                             let finalTai = currentTai;
                             if (currentWinner === currentDealer || p === currentDealer) {
                                 finalTai += 1;
@@ -108,9 +139,7 @@
                     });
                     desc = `${currentWinner} 自摸 ${currentTai}台${currentWinner === currentDealer ? '(莊)' : ''}`;
                 } else {
-                    // 放槍
                     let finalTai = currentTai;
-                    // 如果贏家是莊家 或 放槍者是莊家，台數+1
                     if (currentWinner === currentDealer || currentLoser === currentDealer) {
                         finalTai += 1;
                     }
@@ -120,18 +149,12 @@
                     totalWinAmount = amount;
                     desc = `${currentLoser} 放槍 ${currentWinner} ${currentTai}台`;
                 }
-
                 return { scoreChanges, totalWinAmount, desc };
             };
 
-            // 當選項改變時，更新預覽分數
             useEffect(() => {
                 const impact = calculateImpact(winner, loser, isSelfDraw, taiCount, dealer);
-                if (impact) {
-                    setPreviewScore(impact.totalWinAmount);
-                } else {
-                    setPreviewScore(0);
-                }
+                setPreviewScore(impact ? impact.totalWinAmount : 0);
             }, [winner, loser, isSelfDraw, taiCount, dealer, baseScore, taiScore]);
 
             const showNotification = (msg, type = 'success') => {
@@ -140,11 +163,18 @@
             };
 
             const handleResetGame = () => {
-                if (confirm('確定要重置所有分數和紀錄嗎？')) {
-                    setScores(players.reduce((acc, p) => ({ ...acc, [p]: 0 }), {}));
+                if (confirm('警告：確定要重置所有數據嗎？包含玩家名稱與分數。')) {
+                    const defaultPlayers = ['東', '南', '西', '北'];
+                    setPlayers(defaultPlayers);
+                    setScores({ '東': 0, '南': 0, '西': 0, '北': 0 });
                     setTransactions([]);
-                    setDealer(players[0]);
-                    showNotification('遊戲已重置');
+                    setDealer('東');
+                    setWinner(null);
+                    setLoser(null);
+                    setIsSelfDraw(false);
+                    setTaiCount(1);
+                    setPreviewScore(0);
+                    showNotification('系統已恢復原廠設定');
                 }
             };
 
@@ -153,37 +183,30 @@
                 if (!impact) { showNotification('請確認贏家與輸家', 'error'); return; }
 
                 setLoading(true);
-                
-                // 更新總分
                 const newScores = { ...scores };
                 players.forEach(p => {
-                    newScores[p] += impact.scoreChanges[p];
+                    newScores[p] = (Number(newScores[p]) || 0) + impact.scoreChanges[p];
                 });
 
-                const timestamp = new Date().toLocaleString('zh-TW');
                 const newRecord = {
                     id: Date.now(),
-                    time: timestamp,
+                    time: new Date().toLocaleString('zh-TW'),
                     winner,
                     loser: isSelfDraw ? '三家' : loser,
                     type: isSelfDraw ? '自摸' : '放槍',
                     tai: taiCount,
                     totalExchanged: impact.totalWinAmount,
                     desc: impact.desc,
-                    scoreChanges: impact.scoreChanges, // 儲存詳細的分數變化以便恢復
-                    dealerSnapshot: dealer // 紀錄當下的莊家
+                    scoreChanges: impact.scoreChanges,
+                    dealerSnapshot: dealer
                 };
 
                 setScores(newScores);
                 setTransactions([newRecord, ...transactions]);
                 
-                // 莊家輪替邏輯 (可選): 如果莊家沒胡牌(放槍或閒家自摸)，通常要下莊? 
-                // 這裡先保持手動調整莊家，避免規則爭議，但如果莊家胡牌可以提示連莊。
-                if (winner === dealer) {
-                    showNotification(`莊家(${dealer}) 連莊！`);
-                } else {
+                if (winner === dealer) showNotification(`莊家(${dealer}) 連莊！`);
+                else {
                     showNotification('紀錄已儲存');
-                    // 重置選擇
                     setWinner(null);
                     setLoser(null);
                     setTaiCount(1);
@@ -192,73 +215,52 @@
 
                 if (googleScriptUrl) {
                     try {
-                        await fetch(googleScriptUrl, {
-                            method: 'POST',
-                            mode: 'no-cors', 
-                            body: JSON.stringify(newRecord)
-                        });
-                    } catch (error) {
-                        console.error("Google Sync Error", error);
-                    }
+                        await fetch(googleScriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newRecord) });
+                    } catch (error) { console.error("Sync Error", error); }
                 }
                 setLoading(false);
             };
 
-            // 刪除紀錄（恢復分數）
             const handleDeleteTransaction = (id) => {
                 if(!confirm("確定要刪除這筆紀錄嗎？分數將會恢復。")) return;
-
                 const targetTx = transactions.find(t => t.id === id);
                 if (!targetTx) return;
-
-                // 反向計算分數
                 const newScores = { ...scores };
                 players.forEach(p => {
-                    // 減去當時的變化量
-                    newScores[p] -= targetTx.scoreChanges[p];
+                    newScores[p] = (Number(newScores[p]) || 0) - (targetTx.scoreChanges[p] || 0);
                 });
-
                 setScores(newScores);
                 setTransactions(transactions.filter(t => t.id !== id));
-                showNotification('紀錄已刪除，分數已恢復');
+                showNotification('紀錄已刪除');
             };
 
-            // 編輯紀錄 (撤回並帶入輸入框)
             const handleEditTransaction = (tx) => {
-                if(!confirm("要編輯這筆紀錄嗎？這將會刪除原紀錄並將資料帶回輸入框。")) return;
-                
-                // 1. 先執行刪除邏輯
+                if(!confirm("要編輯這筆紀錄嗎？將刪除原紀錄並帶回資料。")) return;
                 const newScores = { ...scores };
                 players.forEach(p => {
-                    newScores[p] -= tx.scoreChanges[p];
+                    newScores[p] = (Number(newScores[p]) || 0) - (tx.scoreChanges[p] || 0);
                 });
                 setScores(newScores);
                 setTransactions(transactions.filter(t => t.id !== tx.id));
-
-                // 2. 將資料帶回 UI
                 setWinner(tx.winner);
                 setTaiCount(tx.tai);
-                // 如果紀錄中有存當時莊家，則恢復當時莊家，否則維持現狀
                 if (tx.dealerSnapshot) setDealer(tx.dealerSnapshot); 
-                
-                if (tx.type === '自摸') {
-                    setIsSelfDraw(true);
-                    setLoser(null);
-                } else {
-                    setIsSelfDraw(false);
-                    setLoser(tx.loser);
-                }
-                
+                setIsSelfDraw(tx.type === '自摸');
+                setLoser(tx.type === '自摸' ? null : tx.loser);
                 setView('scorer');
-                showNotification('資料已帶回，請修改後重新送出');
+                showNotification('資料已帶回');
             };
 
+            const handleNumberInput = (setter) => (e) => setter(e.target.value === '' ? '' : (parseInt(e.target.value) || 0));
+
             return (
-                <div className="min-h-screen bg-emerald-900 text-white font-sans max-w-md mx-auto shadow-2xl flex flex-col">
+                /* RWD 修改點 1: max-w-md 改為 w-full max-w-5xl，並加入 padding */
+                <div className="min-h-screen bg-emerald-950 text-white font-sans w-full max-w-5xl mx-auto shadow-2xl flex flex-col md:border-x md:border-emerald-900">
                     <header className="bg-emerald-800 p-4 flex justify-between items-center shadow-md z-10">
                         <h1 className="text-xl font-bold flex items-center gap-2">
                             <div className="w-8 h-8 bg-white text-emerald-800 rounded flex items-center justify-center font-serif font-black border-2 border-emerald-600">發</div>
-                            麻將計分
+                            <span className="hidden md:inline">麻將計分 App</span>
+                            <span className="md:hidden">麻將計分</span>
                         </h1>
                         <div className="flex gap-2">
                             <button onClick={() => setView('history')} className={`p-2 rounded relative ${view === 'history' ? 'bg-emerald-600' : 'hover:bg-emerald-700'}`}>
@@ -272,176 +274,187 @@
                     </header>
 
                     {notification && (
-                        <div className={`p-3 text-center text-sm font-bold ${notification.type === 'error' ? 'bg-red-500' : 'bg-green-500'} transition-all fixed top-16 left-0 right-0 max-w-md mx-auto z-50 shadow-lg`}>
+                        <div className={`p-3 text-center text-sm font-bold ${notification.type === 'error' ? 'bg-red-500' : 'bg-green-500'} transition-all fixed top-16 left-0 right-0 max-w-md mx-auto z-50 shadow-lg rounded-b-lg`}>
                             {notification.msg}
                         </div>
                     )}
 
-                    <main className="flex-1 overflow-y-auto p-4 scroll-smooth">
+                    <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">
                         {view === 'scorer' && (
-                            <div className="space-y-5">
-                                {/* 分數顯示區 */}
-                                <div className="grid grid-cols-4 gap-2 bg-emerald-800 p-3 rounded-xl border border-emerald-700 shadow-inner">
+                            <div className="space-y-4 md:space-y-6">
+                                {/* 分數板 - RWD: 電腦版字體變大，間距變寬 */}
+                                <div className="grid grid-cols-4 gap-2 md:gap-4 bg-emerald-800 p-3 md:p-5 rounded-xl border border-emerald-700 shadow-inner">
                                     {players.map((p) => (
-                                        <div key={p} className={`text-center relative p-1 rounded ${dealer === p ? 'bg-yellow-500/10 ring-1 ring-yellow-500/50' : ''}`}>
-                                            {dealer === p && <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-yellow-400"><Crown size={12} fill="currentColor" /></div>}
-                                            <div className="text-emerald-200 text-xs mb-1 truncate flex justify-center items-center gap-1">
+                                        <div key={p} className={`text-center relative p-2 rounded transition-all ${dealer === p ? 'bg-yellow-500/10 ring-1 ring-yellow-500/50' : ''}`}>
+                                            {dealer === p && <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-yellow-400"><Crown size={16} fill="currentColor" /></div>}
+                                            <div className="text-emerald-200 text-xs md:text-sm mb-1 truncate flex justify-center items-center gap-1">
                                                 {p}
                                                 {dealer === p && <span className="text-[10px] bg-yellow-500 text-emerald-900 px-1 rounded font-bold">莊</span>}
                                             </div>
-                                            <div className={`font-mono font-bold text-lg ${scores[p] >= 0 ? 'text-yellow-400' : 'text-red-400'}`}>
-                                                {scores[p] > 0 ? `+${scores[p]}` : scores[p]}
+                                            <div className={`font-mono font-bold text-lg md:text-3xl ${(Number(scores[p]) || 0) >= 0 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                                {(Number(scores[p]) || 0) > 0 ? `+${scores[p]}` : (Number(scores[p]) || 0)}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="bg-emerald-800/50 p-4 rounded-xl border border-emerald-700 shadow-lg">
-                                    {/* 莊家設定區 */}
-                                    <div className="mb-4 bg-emerald-900/40 p-2 rounded-lg border border-emerald-600/30">
-                                        <label className="text-emerald-200 text-xs mb-2 flex items-center gap-1"><Crown size={12} /> 設定莊家 (莊家輸贏多一台)</label>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {players.map(p => (
-                                                <button key={p} onClick={() => setDealer(p)} 
-                                                    className={`py-1 rounded text-xs font-bold transition-all ${dealer === p ? 'bg-yellow-500 text-emerald-900 ring-2 ring-yellow-300' : 'bg-emerald-700 text-emerald-400 hover:bg-emerald-600'}`}>
-                                                    {p}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* 贏家區 */}
-                                    <div className="mb-4">
-                                        <label className="text-emerald-200 text-sm mb-2 block flex items-center gap-2"><CheckCircle size={14} /> 贏家 (胡牌)</label>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {players.map(p => (
-                                                <button key={p} onClick={() => setWinner(p)} className={`py-3 rounded-lg font-bold transition-all relative ${winner === p ? 'bg-yellow-500 text-emerald-900 scale-105 shadow-lg ring-2 ring-yellow-200' : 'bg-emerald-700 text-emerald-100 hover:bg-emerald-600'}`}>
-                                                    {p}
-                                                    {dealer === p && winner === p && <span className="absolute top-0 right-0 text-[10px] bg-red-500 text-white px-1 rounded-bl rounded-tr">連莊</span>}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* 輸家/自摸區 */}
-                                    <div className="mb-4">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label className="text-emerald-200 text-sm flex items-center gap-2"><AlertCircle size={14} /> 放槍者 / 自摸</label>
-                                            <button onClick={() => { setIsSelfDraw(!isSelfDraw); setLoser(null); }} className={`text-xs px-3 py-1 rounded-full border transition-colors ${isSelfDraw ? 'bg-yellow-500 text-emerald-900 border-yellow-500 font-bold' : 'border-emerald-500 text-emerald-300 hover:bg-emerald-800'}`}>
-                                                {isSelfDraw ? '目前：自摸' : '切換為自摸'}
-                                            </button>
-                                        </div>
-                                        {!isSelfDraw ? (
-                                            <div className="grid grid-cols-4 gap-2">
+                                {/* RWD 修改點 2: 使用 Grid 將操作區分為左右兩欄 (md:grid-cols-2) */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                    
+                                    {/* 左側：贏家輸家選擇 */}
+                                    <div className="space-y-4">
+                                        {/* 贏家區 */}
+                                        <div className="bg-emerald-800/50 p-4 rounded-xl border border-emerald-700 h-full">
+                                            <label className="text-emerald-200 text-sm mb-3 block flex items-center gap-2 font-bold"><CheckCircle size={16} /> 贏家 (胡牌)</label>
+                                            <div className="grid grid-cols-2 gap-3">
                                                 {players.map(p => (
-                                                    <button key={p} disabled={winner === p} onClick={() => setLoser(p)} className={`py-3 rounded-lg font-bold transition-all ${winner === p ? 'opacity-20 bg-emerald-900 cursor-not-allowed' : loser === p ? 'bg-red-500 text-white shadow-lg scale-105' : 'bg-emerald-700 hover:bg-emerald-600'}`}>{p}</button>
+                                                    <button key={p} onClick={() => setWinner(p)} className={`py-3 md:py-4 rounded-lg font-bold transition-all relative ${winner === p ? 'bg-yellow-500 text-emerald-900 shadow-lg ring-2 ring-yellow-200 scale-[1.02]' : 'bg-emerald-700 text-emerald-100 hover:bg-emerald-600'}`}>
+                                                        {p}
+                                                        {dealer === p && winner === p && <span className="absolute top-0 right-0 text-[10px] bg-red-500 text-white px-1 rounded-bl rounded-tr">連莊</span>}
+                                                    </button>
                                                 ))}
                                             </div>
-                                        ) : (
-                                            <div className="bg-emerald-900/50 p-3 rounded-lg text-center text-yellow-300 text-sm border border-yellow-500/30 flex justify-center items-center gap-2">
-                                                <span>🎉 自摸！三家通賠</span>
-                                                {winner && dealer && winner !== dealer && <span className="text-[10px] bg-emerald-800 px-1 rounded text-emerald-200">(莊家付 {baseScore + (taiCount+1)*taiScore})</span>}
-                                            </div>
-                                        )}
-                                    </div>
 
-                                    {/* 台數與計算區 */}
-                                    <div className="bg-emerald-900/50 p-4 rounded-lg border border-emerald-600 space-y-4">
-                                        <div>
-                                            <label className="flex justify-between text-sm text-emerald-200 mb-1">
-                                                <span>牌面台數 <span className="text-[10px] opacity-70">(不含莊家台)</span></span>
-                                                <span className="font-mono text-yellow-400 font-bold">{taiCount} 台</span>
-                                            </label>
-                                            <input type="range" min="0" max="20" value={taiCount} onChange={(e) => setTaiCount(parseInt(e.target.value))} className="w-full accent-yellow-500 cursor-pointer" />
-                                        </div>
-                                        
-                                        <div className="flex flex-col gap-2">
-                                            <div className="flex justify-between items-end border-b border-emerald-700 pb-2">
-                                                <span className="text-xs text-emerald-400">贏家總得點 (預估)</span>
-                                                <span className="text-2xl font-mono text-white font-bold tracking-wider">
-                                                    {previewScore > 0 ? previewScore : '--'}
-                                                </span>
-                                            </div>
-                                            <div className="text-[10px] text-emerald-400 text-right">
-                                                {(winner === dealer || loser === dealer || (isSelfDraw && (winner === dealer || dealer))) ? 
-                                                    <span className="text-yellow-400">已自動計入莊家台</span> : 
-                                                    "一般計分"
-                                                }
-                                                <span className="ml-2 opacity-50">底:{baseScore} / 台:{taiScore}</span>
+                                            <div className="mt-6">
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <label className="text-emerald-200 text-sm flex items-center gap-2 font-bold"><AlertCircle size={16} /> 放槍 / 自摸</label>
+                                                    <button onClick={() => { setIsSelfDraw(!isSelfDraw); setLoser(null); }} className={`text-xs px-3 py-1 rounded-full border transition-colors ${isSelfDraw ? 'bg-yellow-500 text-emerald-900 border-yellow-500 font-bold' : 'border-emerald-500 text-emerald-300 hover:bg-emerald-800'}`}>
+                                                        {isSelfDraw ? '目前：自摸' : '切換為自摸'}
+                                                    </button>
+                                                </div>
+                                                {!isSelfDraw ? (
+                                                    <div className="grid grid-cols-2 gap-3">
+                                                        {players.map(p => (
+                                                            <button key={p} disabled={winner === p} onClick={() => setLoser(p)} className={`py-3 md:py-4 rounded-lg font-bold transition-all ${winner === p ? 'opacity-20 bg-emerald-900 cursor-not-allowed' : loser === p ? 'bg-red-500 text-white shadow-lg scale-[1.02]' : 'bg-emerald-700 hover:bg-emerald-600'}`}>{p}</button>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-emerald-900/50 p-6 rounded-lg text-center text-yellow-300 text-sm md:text-base border border-yellow-500/30 flex flex-col justify-center items-center gap-2 h-32">
+                                                        <span className="text-xl">🎉 自摸！</span>
+                                                        <span>三家通賠</span>
+                                                        {winner && dealer && winner !== dealer && <span className="text-xs bg-emerald-800 px-2 py-1 rounded text-emerald-200 mt-1">莊家多付一台</span>}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <button onClick={handleSubmitScore} disabled={loading} className="w-full mt-6 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-emerald-900 font-bold py-4 rounded-xl shadow-lg active:scale-95 flex items-center justify-center gap-2 text-lg transition-transform">
-                                        {loading ? '處理中...' : <><Calculator size={24} /> 確認記分</>}
-                                    </button>
+                                    {/* 右側：設定與計算 */}
+                                    <div className="space-y-4 flex flex-col">
+                                        {/* 莊家設定 */}
+                                        <div className="bg-emerald-900/40 p-3 rounded-lg border border-emerald-600/30">
+                                            <label className="text-emerald-200 text-xs mb-2 flex items-center gap-1"><Crown size={12} /> 設定莊家</label>
+                                            <div className="grid grid-cols-4 gap-2">
+                                                {players.map(p => (
+                                                    <button key={p} onClick={() => setDealer(p)} 
+                                                        className={`py-2 rounded text-xs font-bold transition-all ${dealer === p ? 'bg-yellow-500 text-emerald-900 ring-2 ring-yellow-300' : 'bg-emerald-700 text-emerald-400 hover:bg-emerald-600'}`}>
+                                                        {p}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* 台數計算 */}
+                                        <div className="bg-emerald-900/50 p-5 rounded-lg border border-emerald-600 space-y-4 flex-1 flex flex-col justify-center">
+                                            <div>
+                                                <label className="flex justify-between text-sm md:text-base text-emerald-200 mb-2">
+                                                    <span>牌面台數 <span className="text-[10px] opacity-70">(不含莊家台)</span></span>
+                                                    <span className="font-mono text-yellow-400 font-bold text-xl">{taiCount} 台</span>
+                                                </label>
+                                                <input type="range" min="0" max="20" value={taiCount} onChange={(e) => setTaiCount(parseInt(e.target.value))} className="w-full accent-yellow-500 cursor-pointer h-2 bg-emerald-700 rounded-lg appearance-none" />
+                                                <div className="flex justify-between text-[10px] text-emerald-500 mt-1 px-1">
+                                                    <span>0</span><span>5</span><span>10</span><span>15</span><span>20</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="bg-emerald-950/50 p-4 rounded border border-emerald-800">
+                                                <div className="flex justify-between items-end pb-2 border-b border-emerald-800">
+                                                    <span className="text-xs md:text-sm text-emerald-400">贏家總收 (預估)</span>
+                                                    <span className="text-3xl md:text-4xl font-mono text-white font-bold tracking-wider">
+                                                        {(Number(previewScore) || 0) > 0 ? (Number(previewScore) || 0) : '--'}
+                                                    </span>
+                                                </div>
+                                                <div className="text-[10px] md:text-xs text-emerald-400 text-right mt-2">
+                                                    {(winner === dealer || loser === dealer || (isSelfDraw && (winner === dealer || dealer))) ? 
+                                                        <span className="text-yellow-400">已自動計入莊家台</span> : 
+                                                        "一般計分"
+                                                    }
+                                                    <span className="ml-2 opacity-50">底:{baseScore} / 台:{taiScore}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button onClick={handleSubmitScore} disabled={loading} className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-emerald-900 font-bold py-4 md:py-5 rounded-xl shadow-lg active:scale-95 flex items-center justify-center gap-2 text-lg md:text-xl transition-transform mt-auto">
+                                            {loading ? '處理中...' : <><Calculator size={24} /> 確認記分</>}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}
 
                         {view === 'settings' && (
-                            <div className="space-y-6">
+                            <div className="space-y-6 max-w-2xl mx-auto">
                                 <button onClick={() => setView('scorer')} className="w-full bg-yellow-500 text-emerald-900 font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 hover:bg-yellow-400 transition-colors"><CheckCircle size={20} /> 完成設定 / 返回計分</button>
                                 
-                                <div className="bg-emerald-800 p-4 rounded-xl border border-emerald-700">
+                                <div className="bg-emerald-800 p-4 md:p-6 rounded-xl border border-emerald-700">
                                     <h3 className="font-bold mb-4 flex items-center gap-2 text-yellow-400"><Users size={18} /> 玩家名稱</h3>
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-2 gap-4">
                                         {players.map((p, idx) => (
                                             <input key={idx} type="text" value={p} onChange={(e) => {
                                                 const newPlayers = [...players];
                                                 newPlayers[idx] = e.target.value;
                                                 setPlayers(newPlayers);
-                                            }} className="bg-emerald-900 border border-emerald-600 rounded p-2 text-white focus:ring-2 focus:ring-yellow-500 outline-none" />
+                                            }} className="bg-emerald-900 border border-emerald-600 rounded p-3 text-white focus:ring-2 focus:ring-yellow-500 outline-none" />
                                         ))}
                                     </div>
                                 </div>
 
-                                <div className="bg-emerald-800 p-4 rounded-xl border border-emerald-700">
+                                <div className="bg-emerald-800 p-4 md:p-6 rounded-xl border border-emerald-700">
                                     <h3 className="font-bold mb-4 flex items-center gap-2 text-yellow-400"><Calculator size={18} /> 計分規則</h3>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div><label className="text-xs text-emerald-300">底 (Base)</label><input type="number" value={baseScore} onChange={(e) => setBaseScore(parseInt(e.target.value))} className="w-full bg-emerald-900 border border-emerald-600 rounded p-2 mt-1" /></div>
-                                        <div><label className="text-xs text-emerald-300">台 (Tai)</label><input type="number" value={taiScore} onChange={(e) => setTaiScore(parseInt(e.target.value))} className="w-full bg-emerald-900 border border-emerald-600 rounded p-2 mt-1" /></div>
+                                        <div>
+                                            <label className="text-xs text-emerald-300">底 </label>
+                                            <input type="number" value={baseScore} onChange={handleNumberInput(setBaseScore)} className="w-full bg-emerald-900 border border-emerald-600 rounded p-3 mt-1" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-emerald-300">台 </label>
+                                            <input type="number" value={taiScore} onChange={handleNumberInput(setTaiScore)} className="w-full bg-emerald-900 border border-emerald-600 rounded p-3 mt-1" />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="bg-emerald-800 p-4 rounded-xl border border-emerald-700">
+                                <div className="bg-emerald-800 p-4 md:p-6 rounded-xl border border-emerald-700">
                                     <h3 className="font-bold mb-2 flex items-center gap-2 text-green-400"><FileSpreadsheet size={18} /> Google Script URL</h3>
-                                    <input type="text" value={googleScriptUrl} onChange={(e) => setGoogleScriptUrl(e.target.value)} className="w-full bg-emerald-900 border border-emerald-600 rounded p-2 text-[10px] text-emerald-200 focus:text-white" placeholder="https://script.google.com/..." />
+                                    <input type="text" value={googleScriptUrl} onChange={(e) => setGoogleScriptUrl(e.target.value)} className="w-full bg-emerald-900 border border-emerald-600 rounded p-3 text-xs text-emerald-200 focus:text-white" />
                                 </div>
 
-                                <button onClick={handleResetGame} className="w-full py-3 border border-red-500 text-red-400 rounded-lg flex items-center justify-center gap-2 hover:bg-red-500/10 transition-colors"><RotateCcw size={16} /> 重置所有數據</button>
+                                <button onClick={handleResetGame} className="w-full py-4 border border-red-500 text-red-400 rounded-lg flex items-center justify-center gap-2 hover:bg-red-500/10 transition-colors"><RotateCcw size={16} /> 重置所有數據 (包含玩家)</button>
                             </div>
                         )}
 
                         {view === 'history' && (
-                            <div className="h-full flex flex-col">
+                            <div className="h-full flex flex-col max-w-3xl mx-auto">
                                 <button onClick={() => setView('scorer')} className="mb-4 text-emerald-300 flex items-center gap-1 hover:text-white transition-colors">← 返回記分板</button>
                                 <div className="flex-1 overflow-y-auto space-y-3 pb-4">
                                     {transactions.length === 0 ? <div className="text-center text-emerald-500 mt-10">暫無紀錄</div> : 
                                         transactions.map((t) => (
-                                            <div key={t.id} className="bg-emerald-800 p-3 rounded-lg border-l-4 border-yellow-500 flex justify-between items-center group relative overflow-hidden">
+                                            <div key={t.id} className="bg-emerald-800 p-4 rounded-lg border-l-4 border-yellow-500 flex justify-between items-center group relative overflow-hidden md:hover:bg-emerald-700 transition-colors">
                                                 <div className="z-10 flex-1">
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className="text-[10px] text-emerald-400 bg-emerald-900 px-1 rounded">{t.time.split(' ')[1]}</span>
                                                         <span className="text-[10px] text-emerald-300 border border-emerald-600 px-1 rounded">莊: {t.dealerSnapshot || '?'}</span>
                                                     </div>
-                                                    <div className="text-sm font-bold text-white">{t.desc}</div>
+                                                    <div className="text-sm md:text-base font-bold text-white">{t.desc}</div>
                                                 </div>
                                                 
-                                                <div className="flex items-center gap-3 z-10">
+                                                <div className="flex items-center gap-4 z-10">
                                                     <div className="text-right mr-2">
-                                                        <div className="text-yellow-400 font-mono font-bold text-lg">{t.totalExchanged}</div>
+                                                        <div className="text-yellow-400 font-mono font-bold text-lg md:text-xl">{t.totalExchanged}</div>
                                                         <div className="text-[10px] text-emerald-400">{t.type}</div>
                                                     </div>
-                                                    
-                                                    {/* 操作按鈕 */}
-                                                    <div className="flex gap-1">
-                                                        <button onClick={() => handleEditTransaction(t)} className="p-2 bg-emerald-700 rounded text-emerald-200 hover:bg-blue-600 hover:text-white transition-colors" title="編輯 (撤回重填)">
-                                                            <Pencil size={16} />
-                                                        </button>
-                                                        <button onClick={() => handleDeleteTransaction(t.id)} className="p-2 bg-emerald-700 rounded text-emerald-200 hover:bg-red-600 hover:text-white transition-colors" title="刪除">
-                                                            <Trash2 size={16} />
-                                                        </button>
+                                                    <div className="flex gap-2">
+                                                        <button onClick={() => handleEditTransaction(t)} className="p-2 bg-emerald-700 rounded text-emerald-200 hover:bg-blue-600 hover:text-white transition-colors"><Pencil size={18} /></button>
+                                                        <button onClick={() => handleDeleteTransaction(t.id)} className="p-2 bg-emerald-700 rounded text-emerald-200 hover:bg-red-600 hover:text-white transition-colors"><Trash2 size={18} /></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -452,7 +465,7 @@
                         )}
                     </main>
                     <footer className="p-2 text-center text-[10px] text-emerald-600 border-t border-emerald-800">
-                        Mahjong Calc v2.0
+                        Mahjong Calc 
                     </footer>
                 </div>
             );
